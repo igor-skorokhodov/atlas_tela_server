@@ -36,18 +36,13 @@ const corsOption = {
   },
 };
 
-const { PORT = 3001 } = process.env;
+const { PORT = 3000 } = process.env;
 
 const app = express();
 
 app.use(helmet());
 
 app.use(bodyParser.json());
-
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
 
 app.use(requestLogger);
 
@@ -56,27 +51,6 @@ app.use(limiter);
 app.use(cors(corsOption));
 
 app.use(router);
-
-app.post('/signin',
-  celebrate({
-    body: Joi.object()
-      .keys({
-        number: Joi.string().required().min(2).max(30),
-        password: Joi.string().required(),
-      })
-      .unknown(true),
-  }), login);
-
-app.post(
-  '/signup',
-  celebrate({
-    body: Joi.object().keys({
-      number: Joi.string().required(),
-      password: Joi.string().required(),
-    }).unknown(true),
-  }),
-  createUser,
-);
 
 app.get('*', () => {
   throw new NotError('страница не найдена');
